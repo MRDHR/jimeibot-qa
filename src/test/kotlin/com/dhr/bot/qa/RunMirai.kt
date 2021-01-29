@@ -1,4 +1,4 @@
-package org.example.mirai.plugin
+package com.dhr.bot.qa
 
 import net.mamoe.mirai.alsoLogin
 import net.mamoe.mirai.console.MiraiConsole
@@ -9,8 +9,8 @@ import net.mamoe.mirai.console.terminal.MiraiConsoleTerminalLoader
 suspend fun main() {
     MiraiConsoleTerminalLoader.startAsDaemon()
 
-    PluginMain.load()
-    PluginMain.enable()
+    QaPlugin().enable()
+    QaPlugin().load()
 
     val bot = MiraiConsole.addBot(123456, "") {
         fileBasedDeviceInfo()

@@ -157,8 +157,9 @@ class QaPlugin : KotlinPlugin(
                 val text = findLast.toString()
                 if (text.isNotEmpty() && text.isNotBlank()) {
                     if ("我要se图" == text) {
+                        TODO("需要替换key为你申请的key")
                         val request: Request = Request.Builder()
-                            .url("https://api.lolicon.app/setu/?apikey=052636765f67fec662b3d6&r18=0&size1200=true&proxy=disable")
+                            .url("https://api.lolicon.app/setu/?apikey=key&r18=0&size1200=true&proxy=disable")
                             .build()
                         val response = DownloadUtil.getResponse(request)
                         if (!response.isNullOrEmpty()) {
