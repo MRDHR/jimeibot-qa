@@ -120,9 +120,9 @@ class QaPlugin : KotlinPlugin(
     private fun searchQa(messageEvent: GroupMessageEvent) {
         launch(Dispatchers.IO) {
             val message = messageEvent.message
-            val replace = message.content.replace("查询问", "")
+            val replace = message.content.replace("查询问", "").replace(" ", "")
             val questions = QaData.questions.filter {
-                it.groupId == messageEvent.group.id && it.question?.contains(Regex("^*${replace}.*")) == true
+                it.groupId == messageEvent.group.id && it.question?.contains(replace) == true
             }
             val messageArray: MutableList<Message> = mutableListOf()
             messageArray.add(PlainText("查询到的问题如下："))
@@ -140,8 +140,8 @@ class QaPlugin : KotlinPlugin(
                             .uploadAsImage(messageEvent.group)
                     )
                 }
-                messageArray.add(PlainText("回复[删除问 序号] 可删除对应的问题，举个栗子：删除问 1"))
             }
+            messageArray.add(PlainText("回复[删除问 序号] 可删除对应的问题，举个栗子：删除问 1"))
             val asMessageChain = messageArray.toMessageChain()
             messageEvent.sender.group.sendMessage(asMessageChain)
         }
@@ -157,9 +157,8 @@ class QaPlugin : KotlinPlugin(
                 val text = findLast.toString()
                 if (text.isNotEmpty() && text.isNotBlank()) {
                     if ("我要se图" == text) {
-                        TODO("需要替换key为你申请的key")
                         val request: Request = Request.Builder()
-                            .url("https://api.lolicon.app/setu/?apikey=key&r18=0&size1200=true&proxy=disable")
+                            .url("https://api.lolicon.app/setu/?apikey=052636765f67fec662b3d6&r18=0&size1200=true&proxy=disable")
                             .build()
                         val response = DownloadUtil.getResponse(request)
                         if (!response.isNullOrEmpty()) {
@@ -204,7 +203,7 @@ class QaPlugin : KotlinPlugin(
                         }
                     } else {
                         val questions = QaData.questions.filter {
-                            it.groupId == messageEvent.group.id && it.question?.contains(Regex("^*${text}.*")) == true
+                            it.groupId == messageEvent.group.id && it.question?.contains(text) == true
                         }
                         if (questions.isNotEmpty()) {
                             val randoms = (questions.indices).random()
