@@ -158,12 +158,12 @@ class QaPlugin : KotlinPlugin(
                 if (text.isNotEmpty() && text.isNotBlank()) {
                     if ("我要se图" == text) {
                         val request: Request = Request.Builder()
-                            .url("https://api.lolicon.app/setu/?apikey=052636765f67fec662b3d6&r18=0&size1200=true&proxy=disable")
+                            .url("https://api.lolicon.app/setu/v2/?apikey=052636765f67fec662b3d6&r18=0&proxy=false&size=small")
                             .build()
                         val response = DownloadUtil.getResponse(request)
                         if (!response.isNullOrEmpty()) {
                             val randomSetuVo = DownloadUtil.fromJson(response, RandomSetuVo::class.java)
-                            if (null != randomSetuVo && 0 == randomSetuVo.code) {
+                            if (null != randomSetuVo && randomSetuVo.error.isBlank()) {
                                 val images = mutableListOf<String>()
                                 val file = File("${dataFolder.absolutePath}/image/")
                                 if (!file.exists()) {
@@ -174,8 +174,9 @@ class QaPlugin : KotlinPlugin(
                                 try {
                                     val first = randomSetuVo.data.first()
                                     val pid = first.pid
+                                    val first1 = first.urls
                                     val imageRequest: Request = Request.Builder()
-                                        .url(first.url)
+                                        .url(first1.small)
                                         .addHeader("referer", "https://www.pixiv.net/artworks/$pid")
                                         .removeHeader("User-Agent")
                                         .addHeader(
@@ -185,20 +186,20 @@ class QaPlugin : KotlinPlugin(
                                         .build()
                                     DownloadUtil.downloadFile(imageRequest, imagePath)
                                     images.add(imagePath)
+                                    val messageArray: MutableList<Message> = mutableListOf()
+                                    messageArray.add(PlainText("您点的se图已到货，请签收：\n"))
+                                    images.forEach { it2 ->
+                                        messageArray.add(
+                                            File(it2).toExternalResource().uploadAsImage(messageEvent.group)
+                                        )
+                                    }
+                                    val asMessageChain = messageArray.toMessageChain()
+                                    messageEvent.sender.group.sendMessage(asMessageChain)
                                 } catch (e: MalformedURLException) {
                                     e.printStackTrace()
                                 } catch (e: IOException) {
                                     e.printStackTrace()
                                 }
-                                val messageArray: MutableList<Message> = mutableListOf()
-                                messageArray.add(PlainText("您点的se图已到货，请签收：\n"))
-                                images.forEach { it2 ->
-                                    messageArray.add(
-                                        File(it2).toExternalResource().uploadAsImage(messageEvent.group)
-                                    )
-                                }
-                                val asMessageChain = messageArray.toMessageChain()
-                                messageEvent.sender.group.sendMessage(asMessageChain)
                             }
                         }
                     } else {
